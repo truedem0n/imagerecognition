@@ -1,5 +1,9 @@
 .App {
   text-align: center;
+  height: 100vh;
+  display: block;
+  position: relative;
+  overflow: show;
 }
 
 .App-header {
@@ -27,7 +31,17 @@
 }
 
 .particleClass {
-  position: absolute;
+  position: fixed;
   width: 100%;
-  z-index: 0;
+  height: 100%;
+  left: 0;
+  top: 0;
+  z-index: 1;
+}
+
+.componentsC {
+  position: absolute;
+  z-index: 1;
+  overflow: show;
+  width: 100%;
 }
