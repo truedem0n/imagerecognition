@@ -31,9 +31,21 @@ class App extends Component {
       box: [{ top: 0, left: 0, bottom: 0, right: 0 }],
       inputUrl: "",
       route: "signin",
-      isSignedIn:false
+      isSignedIn: false,
+      users: {
+        id: 0,
+        name: "",
+        email: "",
+        entries: 0,
+        joined: ""
+      }
     };
   }
+  loadUser = data => {
+    this.setState({ users: data });
+    console.log(this.state.users);
+  };
+
   onInput = event => {
     this.setState({
       draw: false,
@@ -43,10 +55,10 @@ class App extends Component {
   };
   onRouteChange = route => {
     this.setState({ route: route });
-    if(route==="home"){
-      this.setState({isSignedIn:true})
-    }else{
-      this.setState({isSignedIn:false})
+    if (route === "home") {
+      this.setState({ isSignedIn: true });
+    } else {
+      this.setState({ isSignedIn: false });
     }
   };
   calculateFaceLocation = e => {
@@ -78,10 +90,35 @@ class App extends Component {
     }
   };
   onSubmit = event => {
+    let ref=this.state
     // var res;
     app.models
       .predict(Clarifai.FACE_DETECT_MODEL, this.state.inputUrl)
-      .then(response => this.calculateFaceLocation(response))
+      .then(response => {
+        this.calculateFaceLocation(response);
+        if (response) {
+          async function updateEntres(url) {
+            
+            try {
+              const response = await fetch(url,{
+                "method":"put",
+                headers: {
+                  Accept: 'application/json',
+                  'Content-Type': 'application/json',
+              },
+              body:JSON.stringify({
+                id:ref.users.id,
+              })
+              });
+              let res=await response.json();
+              Object.assign(ref.users,{entries:res})
+            } catch (e) {
+              console.log(e);
+            }
+          }
+          updateEntres("http://localhost:3001/image")
+        }
+      })
       .catch(err => {
         // there was an error
       });
@@ -91,16 +128,22 @@ class App extends Component {
       <div className="App">
         <Particles className="particleClass" params={parmOption} />
         <div className="componentsC">
-          <Navigation onRouteChange={this.onRouteChange} isSignedIn={this.state.isSignedIn} />
+          <Navigation
+            onRouteChange={this.onRouteChange}
+            isSignedIn={this.state.isSignedIn}
+          />
           <Logo />
           {this.state.route === "signin" ? (
             <SignIn onRouteChange={this.onRouteChange} />
-          ) : 
-            <div/>
-          }
+          ) : (
+            <div />
+          )}
           {this.state.route === "home" ? (
             <div>
-              <Rank />
+              <Rank
+                name={this.state.users.name}
+                entries={this.state.users.entries}
+              />
               <ImageLinkForm
                 onInputChange={this.onInput}
                 onSubmit={this.onSubmit}
@@ -116,10 +159,13 @@ class App extends Component {
             <div />
           )}
           {this.state.route === "register" ? (
-            <Register onRouteChange={this.onRouteChange} />
-          ) : 
-            <div/>
-          }
+            <Register
+              loadUser={this.loadUser}
+              onRouteChange={this.onRouteChange}
+            />
+          ) : (
+            <div />
+          )}
         </div>
       </div>
     );

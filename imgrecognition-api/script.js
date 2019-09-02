@@ -1,7 +1,10 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 const app = express();
+let id=125
 app.use(bodyParser.json());
+app.use(cors());
 const database = {
   users: [
     {
@@ -27,15 +30,24 @@ app.get("/", (req, res) => {
   res.send(database.users);
 });
 app.post("/signin", (req, res) => {
-  if (req.body.email === database.users[0].email) {
-    res.json("signing");
-  } else {
+  let found = false;
+  console.log(req.body  )
+  database.users.forEach(users => {
+    if (
+      users.email === req.body.email &&
+      users.password === req.body.password
+    ) {
+      found = true;
+      return res.json("success");
+    }
+  });
+  if (!found) {
     res.status(400).json("error loggin in");
   }
 });
 app.post("/register", (req, res) => {
   database.users.push({
-    id: 125,
+    id: id,
     name: req.body.name,
     email: req.body.email,
     password: req.body.password,
@@ -43,37 +55,39 @@ app.post("/register", (req, res) => {
     joined: new Date()
   });
   res.json(database.users[database.users.length - 1]);
+  id++
 });
 
 app.get("/profile/:id", (req, res) => {
-  const  {id} =req.params;
-  let found=false
-  database.users.forEach(user=>{
-    if(user.id==id){
-      found=true
+  const { id } = req.params;
+  let found = false;
+  database.users.forEach(user => {
+    if (user.id == id) {
+      found = true;
       return res.json(user);
     }
-  })
-  if(!found){
-    res.status(404).json("no such user")
+  });
+  if (!found) {
+    res.status(404).json("no such user");
   }
 });
-app.get("/profile/:id", (req, res) => {
-  const  {id} =req.params;
-  let found=false
-  database.users.forEach(user=>{
-    if(user.id==id){
-      found=true
-      return res.json(user);
+app.put("/image", (req, res) => {
+  const { id } = req.body;
+  console.log(id);
+  let found = false;
+  database.users.forEach(user => {
+    if (user.id == id) {
+      found = true;
+      user.entries++;
+      return res.json(user.entries);
     }
-  })
-  if(!found){
-    res.status(404).json("no such user")
+  });
+  if (!found) {
+    res.status(404).json("no such user");
   }
 });
 
-app.listen(3001, () => {
-});
+app.listen(3001, () => {});
 
 // root = this is working (homepage) so get request
 // signin= post request (user information)
