@@ -2,7 +2,16 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const app = express();
-let id=125
+var pg = require("knex")({
+  client: "pg",
+  connection: {
+    host: "127.0.0.1",
+    user: "postgres",
+    password: "postgres",
+    database: "myapp_test"
+  }
+});
+let id = 125;
 app.use(bodyParser.json());
 app.use(cors());
 const database = {
@@ -31,7 +40,7 @@ app.get("/", (req, res) => {
 });
 app.post("/signin", (req, res) => {
   let found = false;
-  console.log(req.body  )
+  console.log(req.body);
   database.users.forEach(users => {
     if (
       users.email === req.body.email &&
@@ -55,7 +64,7 @@ app.post("/register", (req, res) => {
     joined: new Date()
   });
   res.json(database.users[database.users.length - 1]);
-  id++
+  id++;
 });
 
 app.get("/profile/:id", (req, res) => {
