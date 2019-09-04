@@ -43,7 +43,6 @@ class App extends Component {
   }
   loadUser = data => {
     this.setState({ users: data });
-    console.log(this.state.users);
   };
 
   onInput = event => {
