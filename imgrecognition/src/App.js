@@ -22,7 +22,20 @@ const parmOption = {
     }
   }
 };
-
+const initialState = {
+  draw: false,
+  box: [{ top: 0, left: 0, bottom: 0, right: 0 }],
+  inputUrl: "",
+  route: "signin",
+  isSignedIn: false,
+  users: {
+    id: 0,
+    name: "",
+    email: "",
+    entries: 0,
+    joined: ""
+  }
+};
 class App extends Component {
   constructor() {
     super();
@@ -53,12 +66,14 @@ class App extends Component {
     });
   };
   onRouteChange = route => {
+    
     this.setState({ route: route });
     if (route === "home") {
-      this.setState({ isSignedIn: true });
+      this.setState({ isSignedIn: true, route: route });
     } else {
-      this.setState({ isSignedIn: false });
+      this.setState(Object.assign({}, initialState, { isSignedIn: false,route:route }));
     }
+    console.log("Input",route,"State",this.state.route);
   };
   calculateFaceLocation = e => {
     const img = document.getElementById("inputImg");
@@ -89,7 +104,7 @@ class App extends Component {
     }
   };
   onSubmit = event => {
-    let ref=this.state
+    let ref = this.state;
     // var res;
     app.models
       .predict(Clarifai.FACE_DETECT_MODEL, this.state.inputUrl)
@@ -97,29 +112,28 @@ class App extends Component {
         this.calculateFaceLocation(response);
         if (response) {
           async function updateEntres(url) {
-            
             try {
-              const response = await fetch(url,{
-                "method":"put",
+              const response = await fetch(url, {
+                method: "put",
                 headers: {
-                  Accept: 'application/json',
-                  'Content-Type': 'application/json',
-              },
-              body:JSON.stringify({
-                id:ref.users.id,
-              })
+                  Accept: "application/json",
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                  id: ref.users.id
+                })
               });
-              let res=await response.json();
-              Object.assign(ref.users,{entries:res})
+              let res = await response.json();
+              Object.assign(ref.users, { entries: res });
             } catch (e) {
               console.log(e);
             }
           }
-          updateEntres("http://localhost:3001/image")
+          updateEntres("http://localhost:3001/image");
         }
       })
       .catch(err => {
-        // there was an error
+        console.log(err);
       });
   };
   render() {
@@ -133,7 +147,10 @@ class App extends Component {
           />
           <Logo />
           {this.state.route === "signin" ? (
-            <SignIn onRouteChange={this.onRouteChange} />
+            <SignIn
+              loadUser={this.loadUser}
+              onRouteChange={this.onRouteChange}
+            />
           ) : (
             <div />
           )}

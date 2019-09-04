@@ -1,13 +1,13 @@
 import React from "react";
 
 class Register extends React.Component {
-  constructor(props){
-    super(props)
-    this.state={
-      "name":"",
-      "email":"",
-      "password":""
-    }
+  constructor(props) {
+    super(props);
+    this.state = {
+      name: "",
+      email: "",
+      password: ""
+    };
   }
   onEmailChange = event => {
     this.setState({ email: event.target.value });
@@ -19,35 +19,36 @@ class Register extends React.Component {
     this.setState({ password: event.target.value });
   };
   onSignUp = () => {
-    let email=this.state.email,name=this.state.name,
-    password=this.state.password,selfI=this.props;
+    let email = this.state.email,
+      name = this.state.name,
+      password = this.state.password,
+      selfI = this.props;
     async function logFetch(url) {
       try {
-        const response = await fetch(url,{
-          "method":"post",
+        const response = await fetch(url, {
+          method: "post",
           headers: {
-            'Content-Type': 'application/json',
-        },
-        body:JSON.stringify({
-          email:email,
-          password:password,
-          name:name
-        })
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            email: email,
+            password: password,
+            name: name
+          })
         });
-        let res=await response.json();
-        if(res){
+        let res = await response.json();
+        if (res.id) {
           selfI.loadUser(res);
           selfI.onRouteChange("home");
-        }else{
-          console.log(res)
+        } else {
+          console.log(res);
         }
-      }
-      catch (err) {
-        console.log('fetch failed', err);
+      } catch (err) {
+        console.log("fetch failed", err);
       }
     }
-    
-    logFetch("http://localhost:3001/register")
+
+    logFetch("http://localhost:3001/register");
   };
 
   render() {
@@ -105,7 +106,11 @@ class Register extends React.Component {
                 />
               </div>
               <div className="lh-copy mt3">
-                <a href="#0" className="f6 link dim black db">
+                <a
+                  href="#0"
+                  onClick={() => this.props.onRouteChange("signin")}
+                  className="f6 link dim black db"
+                >
                   Sign in
                 </a>
                 <a href="#0" className="f6 link dim black db">

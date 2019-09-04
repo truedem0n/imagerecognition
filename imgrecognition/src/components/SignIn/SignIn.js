@@ -31,7 +31,8 @@ class SignIn extends React.Component {
         })
         });
         let res=await response.json();
-        if(res==="success"){
+        if(res.id){
+          selfI.loadUser(res);
           selfI.onRouteChange("home");
         }else{
           console.log(res)
