@@ -73,7 +73,6 @@ class App extends Component {
     } else {
       this.setState(Object.assign({}, initialState, { isSignedIn: false,route:route }));
     }
-    console.log("Input",route,"State",this.state.route);
   };
   calculateFaceLocation = e => {
     const img = document.getElementById("inputImg");
