@@ -48,7 +48,7 @@ class Register extends React.Component {
       }
     }
 
-    logFetch("http://localhost:3001/register");
+    logFetch("https://warm-coast-03445.herokuapp.com/register");
   };
 
   render() {

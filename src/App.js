@@ -128,7 +128,7 @@ class App extends Component {
               console.log(e);
             }
           }
-          updateEntres("http://localhost:3001/image");
+          updateEntres("https://warm-coast-03445.herokuapp.com/image");
         }
       })
       .catch(err => {
